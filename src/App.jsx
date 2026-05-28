@@ -1,5 +1,5 @@
 import {
-  BrowserRouter,
+  HashRouter ,
   Routes,
   Route,
   Navigate
@@ -78,7 +78,7 @@ function App() {
 
   return (
 
-    <BrowserRouter>
+    <HashRouter >
 
       <div className="min-h-screen bg-[#F7F4F2] px-6 lg:px-14">
 
@@ -136,7 +136,7 @@ function App() {
 
       </div>
 
-    </BrowserRouter>
+    </HashRouter >
 
   )
 }
