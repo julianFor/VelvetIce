@@ -1,5 +1,4 @@
 import {
-  HashRouter ,
   Routes,
   Route,
   Navigate
@@ -78,8 +77,6 @@ function App() {
 
   return (
 
-    <HashRouter >
-
       <div className="min-h-screen bg-[#F7F4F2] px-6 lg:px-14">
 
         <Navbar
@@ -135,8 +132,6 @@ function App() {
         <Toaster position="top-right" />
 
       </div>
-
-    </HashRouter >
 
   )
 }
