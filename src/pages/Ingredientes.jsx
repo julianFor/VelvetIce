@@ -10,9 +10,11 @@ import {
   FaSearch
 } from 'react-icons/fa'
 
+import toast, { Toaster } from 'react-hot-toast'
+
 Modal.setAppElement('#root')
 
-function Ingredientes() {
+function Ingredientes({ session }) {
 
   const [ingredientes, setIngredientes] = useState([])
 
@@ -29,9 +31,52 @@ function Ingredientes() {
   const [calorias, setCalorias] = useState('')
   const [inventario, setInventario] = useState('')
 
+  const [rol, setRol] = useState('publico')
+
   useEffect(() => {
+
     obtenerIngredientes()
-  }, [])
+
+    if (session?.user?.email) {
+      obtenerRol()
+    } else {
+      setRol('publico')
+    }
+
+  }, [session])
+
+  async function obtenerRol() {
+
+    const email =
+      session?.user?.email?.toLowerCase()
+
+    if (
+      email ===
+      'drubiano@uniandes.edu.co'
+    ) {
+
+      setRol('admin')
+
+    } else if (
+      email ===
+      'drubiano000@gmail.com'
+    ) {
+
+      setRol('empleado')
+
+    } else if (
+      email ===
+      'drubiano@live.com'
+    ) {
+
+      setRol('cliente')
+
+    } else {
+
+      setRol('publico')
+
+    }
+  }
 
   async function obtenerIngredientes() {
 
@@ -45,7 +90,28 @@ function Ingredientes() {
     }
   }
 
+  function validarPermiso() {
+
+    // SOLO ADMIN Y EMPLEADO
+
+    if (
+      rol !== 'admin' &&
+      rol !== 'empleado'
+    ) {
+
+      toast.error(
+        'No tienes permisos para gestionar ingredientes'
+      )
+
+      return false
+    }
+
+    return true
+  }
+
   async function crearIngrediente() {
+
+    if (!validarPermiso()) return
 
     const { error } = await supabase
       .from('ingredientes')
@@ -61,13 +127,24 @@ function Ingredientes() {
 
     if (!error) {
 
+      toast.success(
+        'Ingrediente creado correctamente'
+      )
+
       cerrarModales()
       obtenerIngredientes()
 
+    } else {
+
+      toast.error(
+        'Error creando ingrediente'
+      )
     }
   }
 
   async function editarIngrediente() {
+
+    if (!validarPermiso()) return
 
     const { error } = await supabase
       .from('ingredientes')
@@ -81,13 +158,24 @@ function Ingredientes() {
 
     if (!error) {
 
+      toast.success(
+        'Ingrediente actualizado'
+      )
+
       cerrarModales()
       obtenerIngredientes()
 
+    } else {
+
+      toast.error(
+        'Error actualizando ingrediente'
+      )
     }
   }
 
   async function eliminarIngrediente(id) {
+
+    if (!validarPermiso()) return
 
     const confirmar = confirm(
       '¿Eliminar ingrediente?'
@@ -101,11 +189,24 @@ function Ingredientes() {
       .eq('id', id)
 
     if (!error) {
+
+      toast.success(
+        'Ingrediente eliminado'
+      )
+
       obtenerIngredientes()
+
+    } else {
+
+      toast.error(
+        'Error eliminando ingrediente'
+      )
     }
   }
 
   function abrirEditar(ingrediente) {
+
+    if (!validarPermiso()) return
 
     setIngredienteActual(ingrediente)
 
@@ -139,7 +240,9 @@ function Ingredientes() {
 
   return (
 
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto pb-20">
+
+      <Toaster position="top-right" />
 
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">
 
@@ -160,7 +263,12 @@ function Ingredientes() {
         </div>
 
         <button
-          onClick={() => setModalCrear(true)}
+          onClick={() => {
+
+            if (!validarPermiso()) return
+
+            setModalCrear(true)
+          }}
           className="bg-[#6D213C] hover:bg-[#52172d] transition text-white px-7 py-4 rounded-2xl font-semibold flex items-center gap-3 shadow-xl"
         >
 
@@ -289,8 +397,11 @@ function Ingredientes() {
         <div className="space-y-5">
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Nombre del ingrediente
+
             </label>
 
             <input
@@ -301,11 +412,15 @@ function Ingredientes() {
                 setNombre(e.target.value)
               }
             />
+
           </div>
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Precio
+
             </label>
 
             <input
@@ -316,11 +431,15 @@ function Ingredientes() {
                 setPrecio(e.target.value)
               }
             />
+
           </div>
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Calorías
+
             </label>
 
             <input
@@ -331,11 +450,15 @@ function Ingredientes() {
                 setCalorias(e.target.value)
               }
             />
+
           </div>
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Cantidad en inventario
+
             </label>
 
             <input
@@ -346,6 +469,7 @@ function Ingredientes() {
                 setInventario(e.target.value)
               }
             />
+
           </div>
 
           <button
@@ -379,8 +503,11 @@ function Ingredientes() {
         <div className="space-y-5">
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Nombre del ingrediente
+
             </label>
 
             <input
@@ -391,11 +518,15 @@ function Ingredientes() {
                 setNombre(e.target.value)
               }
             />
+
           </div>
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Precio
+
             </label>
 
             <input
@@ -406,11 +537,15 @@ function Ingredientes() {
                 setPrecio(e.target.value)
               }
             />
+
           </div>
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Calorías
+
             </label>
 
             <input
@@ -421,11 +556,15 @@ function Ingredientes() {
                 setCalorias(e.target.value)
               }
             />
+
           </div>
 
           <div>
+
             <label className="text-sm font-semibold text-gray-600 block mb-2">
+
               Cantidad en inventario
+
             </label>
 
             <input
@@ -436,6 +575,7 @@ function Ingredientes() {
                 setInventario(e.target.value)
               }
             />
+
           </div>
 
           <button
